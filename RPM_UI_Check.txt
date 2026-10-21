@@ -1,0 +1,1 @@
+PASS: geometry study, separate bore/stroke options, six unknown component caps, proven redline UNKNOWN, no measured data fabricated, no power extrapolation. Math/parser checks in RPM_Check.json. Synthetic CSV-to-chart/provenance integration passed; wheel data excluded from crank-model comparison; all synthetic UI data cleared.

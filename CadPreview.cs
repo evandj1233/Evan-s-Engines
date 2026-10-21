@@ -21,7 +21,7 @@ namespace V10Lab {
   bool CadGeometryMatches(){return input.Cylinders==10&&Math.Abs(input.BoreMm-95)<.0001&&Math.Abs(input.StrokeMm-98.756274)<.0001&&Math.Abs(input.RodMm-160)<.0001;}
   void UpdateCadPreview(double now){
    if(cadView==null||now-cadUpdated<.065)return;cadUpdated=now;
-   if(cadView.SelectedIndex==2||!CadGeometryMatches()){cadCaption=CadGeometryMatches()?"Cylinder schematic":"CAD view is for the original V10 geometry; showing schematic";if(cadLarge!=null&&!cadLarge.IsDisposed)cadLarge.Invalidate();return;}
+   if(cadView.SelectedIndex==2||!CadGeometryMatches()||(turbo.Checked&&sc.Checked)){cadCaption=!CadGeometryMatches()?"CAD view is for the original V10 geometry; showing schematic":turbo.Checked&&sc.Checked?"Rev B develops separate boost packages; combined mode uses the schematic":"Cylinder schematic";if(cadLarge!=null&&!cadLarge.IsDisposed)cadLarge.Invalidate();return;}
    string folder=Path.Combine(Root,"CAD_Preview",cadView.SelectedIndex==1?"cutaway":"exterior_"+((turbo.Checked?1:0)+(sc.Checked?2:0))),ready=Path.Combine(folder,"Ready.json");
    if(!File.Exists(ready)){cadCaption="CAD frames not installed; showing cylinder schematic";cadFrame="";if(cadLarge!=null&&!cadLarge.IsDisposed)cadLarge.Invalidate();return;}
    try{
@@ -33,7 +33,7 @@ namespace V10Lab {
    if(cadWindow!=null&&!cadWindow.IsDisposed)cadLarge.Invalidate();
   }
   bool DrawCadEngine(Graphics g){
-   if(cadView==null||cadView.SelectedIndex==2||!CadGeometryMatches()||cadImage==null||cadFrame.Length==0){if(!CadGeometryMatches())TextAt(g,"V10 CAD preview does not match the edited geometry",20,478,8,LiveMuted);return false;}
+   if(cadView==null||cadView.SelectedIndex==2||!CadGeometryMatches()||(turbo.Checked&&sc.Checked)||cadImage==null||cadFrame.Length==0){if(!CadGeometryMatches())TextAt(g,"V10 CAD preview does not match the edited geometry",20,478,8,LiveMuted);return false;}
    TextAt(g,cadView.SelectedIndex==1?"YOUR V10 / INTERNAL COMPONENTS":"YOUR V10 / SOLIDWORKS ASSEMBLY",20,244,10,Color.White,true);
    TextAt(g,cadCaption,20,264,8,LiveMuted);DrawFitted(g,cadImage,new RectangleF(20,286,520,197));return true;
   }
@@ -41,18 +41,18 @@ namespace V10Lab {
   void EnlargeCad(){
    if(cadWindow!=null&&!cadWindow.IsDisposed){cadWindow.Activate();return;}
    cadWindow=new Form{Text="Your V10 | SOLIDWORKS rendered motion",Size=new Size(1050,780),MinimumSize=new Size(600,450),StartPosition=FormStartPosition.CenterParent,BackColor=Color.FromArgb(13,24,38)};
-   cadLarge=new SmoothPanel{Dock=DockStyle.Fill};cadLarge.Paint+=(s,e)=>{TextAt(e.Graphics,cadCaption,20,18,11,Color.White,true);TextAt(e.Graphics,"Rendered CAD poses follow the model's slowed crank angle. No combustion or deformation is visualized.",20,48,9,LiveMuted);if(cadImage!=null&&cadView.SelectedIndex!=2&&CadGeometryMatches()&&cadFrame.Length>0)DrawFitted(e.Graphics,cadImage,new RectangleF(20,85,Math.Max(1,cadLarge.Width-40),Math.Max(1,cadLarge.Height-110)));else TextAt(e.Graphics,"Select a SOLIDWORKS view of the original V10 geometry in Live bench.",20,100,12,Color.White);};cadWindow.Controls.Add(cadLarge);cadWindow.Show(this);
+   cadLarge=new SmoothPanel{Dock=DockStyle.Fill};cadLarge.Paint+=(s,e)=>{TextAt(e.Graphics,cadCaption,20,18,11,Color.White,true);TextAt(e.Graphics,"Rendered CAD poses follow the model's slowed crank angle. No combustion or deformation is visualized.",20,48,9,LiveMuted);if(cadImage!=null&&cadView.SelectedIndex!=2&&CadGeometryMatches()&&!(turbo.Checked&&sc.Checked)&&cadFrame.Length>0)DrawFitted(e.Graphics,cadImage,new RectangleF(20,85,Math.Max(1,cadLarge.Width-40),Math.Max(1,cadLarge.Height-110)));else TextAt(e.Graphics,"Select a SOLIDWORKS view of the original V10 geometry in Live bench.",20,100,12,Color.White);};cadWindow.Controls.Add(cadLarge);cadWindow.Show(this);
   }
   public void CadPreviewCheck(){
    tabs.SelectedIndex=0;live.Enabled=true;BeginLive();
-   for(int mode=0;mode<4;mode++){turbo.Checked=(mode&1)!=0;sc.Checked=(mode&2)!=0;for(int frame=0;frame<24;frame++){live.VisualAngle=frame*30;cadUpdated=-1;UpdateCadPreview(clock.Elapsed.TotalSeconds);if(cadImage==null||!cadFrame.EndsWith("frame_"+frame.ToString("D3")+".png")||!cadFrame.Contains("exterior_"+mode))throw new Exception("Native exterior frame selection failed.");}}
+   for(int mode=0;mode<3;mode++){turbo.Checked=(mode&1)!=0;sc.Checked=(mode&2)!=0;for(int frame=0;frame<24;frame++){live.VisualAngle=frame*30;cadUpdated=-1;UpdateCadPreview(clock.Elapsed.TotalSeconds);if(cadImage==null||!cadFrame.EndsWith("frame_"+frame.ToString("D3")+".png")||!cadFrame.Contains("exterior_"+mode))throw new Exception("Native exterior frame selection failed.");}}
    turbo.Checked=false;sc.Checked=false;cadView.SelectedIndex=1;byte[] first=null;
    for(int frame=0;frame<24;frame++){live.VisualAngle=frame*30;cadUpdated=-1;UpdateCadPreview(clock.Elapsed.TotalSeconds);if(!cadFrame.Contains("cutaway")||!cadFrame.EndsWith("frame_"+frame.ToString("D3")+".png"))throw new Exception("Cutaway frame selection failed.");using(SHA256 hash=SHA256.Create()){byte[] digest=hash.ComputeHash(File.ReadAllBytes(cadFrame));if(frame==0)first=digest;if(frame==4&&Convert.ToBase64String(first)==Convert.ToBase64String(digest))throw new Exception("Native cutaway frames did not change.");}}
    input.Cylinders=4;if(CadGeometryMatches())throw new Exception("Unrelated geometry incorrectly matched V10.");input.Cylinders=10;
    cadView.SelectedIndex=0;turbo.Checked=false;sc.Checked=true;live.VisualAngle=120;cadUpdated=-1;UpdateCadPreview(clock.Elapsed.TotalSeconds);AdvanceLive(3,clock.Elapsed.TotalSeconds);Application.DoEvents();
    using(Bitmap bmp=new Bitmap(Width,Height)){DrawToBitmap(bmp,new Rectangle(0,0,Width,Height));bmp.Save(Path.Combine(Root,"Evidence","CAD_Live_Bench.png"));}
    tabs.SelectedIndex=1;RunSweep(false);Application.DoEvents();using(Bitmap bmp=new Bitmap(Width,Height)){DrawToBitmap(bmp,new Rectangle(0,0,Width,Height));bmp.Save(Path.Combine(Root,"Evidence","Peak_HP.png"));}
-   File.WriteAllText(Path.Combine(Root,"Evidence","CAD_Preview_Check.txt"),"PASS: all 120 native frames decoded, all four exterior boost selections, cutaway frame changes, edited geometry fallback, native pose readback in Render_Checks.json, and sampled peak HP display. Rendered poses are not physical validation.");
+   File.WriteAllText(Path.Combine(Root,"Evidence","CAD_Preview_Check.txt"),"PASS: 96 native Rev B frames decoded, naturally aspirated and separate turbo/blower exterior selections, cutaway frame changes, edited geometry fallback, native pose readback in Render_Checks.json, and sampled peak HP display. Rendered poses are not physical validation.");
   }
  }
 }

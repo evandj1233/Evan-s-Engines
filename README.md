@@ -11,7 +11,9 @@ A local Windows engineering lab for engine scenarios, cylinder thermodynamics, p
 - Optional SOLIDWORKS exterior/cutaway animation and an enlarged engine view. The local V10 installation includes native rendered frames; private CAD and frame assets are not included in this public repository. Other geometry falls back to the schematic.
 - Configurable four-stroke engines with 1–16 cylinders; a 7.0 L V10 starts with geometry from the user's CAD concept.
 - Direct RPM/throttle controls, sweeps, independent twin-turbo/supercharger switches and four-mode comparisons.
-- Peak sampled horsepower and its RPM appear above the Performance chart (800–7000 RPM, 200 RPM steps).
+- Peak sampled horsepower and its RPM appear above the Performance chart (800–7000 RPM, 200 RPM steps). The live gauges also display the full-throttle sampled peak for the selected boost package, separate from current power.
+- Power development compares separate turbo/blower scenarios toward a requested crank-hp target, showing required boost, charge temperature, cooling duty and blower drive power. Proposed efficiencies remain explicit assumptions; no-hit targets are reported. [Study and limitations](1000_HP_Development.md).
+- RPM & real data studies slider-crank motion up to 20,000 RPM, compares displacement-preserving stroke options, records missing component limits and imports user-supplied dyno torque/HP for comparison. Its higher motion range is not a safe redline; power is not extrapolated beyond 7,000 RPM. [RPM/data notes](RPM_And_Real_Data.md).
 - Saved JSON engine cases, CSV curves and complete input snapshots.
 - Cantera variable-property closed-cylinder pressure traces with prescribed heat release, energy balance and step convergence checks.
 - Slow-motion piston, rod and valve inspection; optional native SOLIDWORKS part opening and read-only mass/material helper.
@@ -26,7 +28,7 @@ Install Python 3.12 x64 and .NET Framework 4.x, then run:
 build.cmd "C:\path\to\python.exe"
 ```
 
-The script compiles the native UI with Windows' framework compiler, installs pinned Python dependencies locally, packages a runtime and runs numerical checks. Launch `EvansEngines.exe`. Sources are at the repository root. An optional CAD helper builds when a licensed SOLIDWORKS API interop library is present. SOLIDWORKS is not required for the other calculators.
+The script compiles the native UI with Windows' framework compiler, installs pinned Python dependencies locally, packages a runtime and runs numerical checks. Launch `EvansEngines.exe`. Optional launch arguments: `--rpm-study` opens the RPM/data page; `--power-development` opens the package comparison; `--turbo-concept` or `--blower-concept` loads the corresponding target-matched scenario into the running live bench. Sources are at the repository root. An optional CAD helper builds when a licensed SOLIDWORKS API interop library is present. SOLIDWORKS is not required for the other calculators.
 
 ## Accuracy
 

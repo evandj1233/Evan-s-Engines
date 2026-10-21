@@ -20,7 +20,7 @@ namespace V10Lab {
         public double TurboExhaustLossBar=0.25;
         public double[] VeRPM={800,1500,2500,3500,4500,5500,6500,7000};
         public double[] Ve={0.68,0.78,0.87,0.94,0.98,0.95,0.88,0.82};
-        public string ModelVersion="0.3.0";
+        public string ModelVersion="0.4.0";
         public string DataStatus="UNVALIDATED SCENARIO: airflow, combustion, losses and boost are assumptions";
         public Inputs Copy() {return Json.Deserialize<Inputs>(Json.Serialize(this));}
         public void Validate() {
@@ -28,10 +28,11 @@ namespace V10Lab {
             Range(RodMm,StrokeMm/2+1,400,"Rod length");
             if(Cylinders<1||Cylinders>16)throw new ArgumentException("Choose 1 through 16 cylinders.");
             Range(CompressionRatio,5,16,"Compression ratio");Range(AmbientKPa,60,120,"Ambient pressure");Range(AmbientC,-20,60,"Ambient temperature");
-            Range(AFR,8,20,"Air/fuel ratio");Range(StoichAFR,10,18,"Stoichiometric ratio");Range(LHV_MJkg,20,50,"Fuel heating value");
+            Range(AFR,7,20,"Air/fuel ratio");Range(StoichAFR,8.5,18,"Stoichiometric ratio");Range(LHV_MJkg,20,50,"Fuel heating value");
             Range(Gamma,1.1,1.67,"Specific-heat ratio");Range(OttoRealization,0.1,1,"Otto realization");Range(CombustionEfficiency,0.1,1,"Combustion efficiency");
             Range(VeScale,0.4,1.6,"VE multiplier");Range(FrictionBaseBar,0,3,"Friction base");Range(FrictionLinear,0,0.2,"Friction linear");Range(FrictionSquare,0,0.01,"Friction square");
-            Range(AccessoryKW,0,30,"Accessory power");Range(TurboPsi,0,20,"Turbo stage boost");Range(SuperchargerPsi,0,15,"Supercharger stage boost");
+            // Computational study bounds only; they do not establish safe boost.
+            Range(AccessoryKW,0,30,"Accessory power");Range(TurboPsi,0,50,"Turbo stage boost (study range)");Range(SuperchargerPsi,0,50,"Supercharger stage boost (study range)");
             Range(TurboEfficiency,0.3,1,"Turbo compressor efficiency");Range(SuperchargerEfficiency,0.3,1,"Supercharger efficiency");
             Range(IntercoolerEffectiveness,0,1,"Intercooler effectiveness");Range(DriveEfficiency,0.5,1,"Drive efficiency");Range(TurboExhaustLossBar,0,3,"Turbo exhaust loss");
             if(Ve==null||VeRPM==null||Ve.Length!=VeRPM.Length||Ve.Length<2)throw new ArgumentException("VE table needs matching RPM and VE rows.");

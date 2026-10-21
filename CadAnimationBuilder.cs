@@ -12,27 +12,27 @@ using SolidWorks.Interop.sldworks;
 // Optional V10 CAD renderer. Renders a COPY of the open assembly, never saves
 // the original and never edits a native part. Requires licensed SOLIDWORKS.
 public static class CadAnimationBuilder {
- public sealed class Request {public string EngineFolder,AppFolder;public int Frames=24;}
+ public sealed class Request {public string EngineFolder,AppFolder,AssemblyFile="Ford_427_V10_Development.SLDASM";public int Frames=24;}
  static readonly string[] Moving={"crank","cam","cam_gear","crank_gear","piston","rings","pin","rod","rod_bearing","valve","boost_turbo_rotor","boost_sc_rotor","boost_sc_drive","boost_sc_clutch","accessory_drive"};
  [STAThread]public static int Main(string[] args){ISldWorks sw=null;ModelDoc2 source=null,copy=null;string output="";try{
   if(args.Length!=1)throw new Exception("Pass one CAD render request JSON path.");Request request=new JavaScriptSerializer().Deserialize<Request>(File.ReadAllText(args[0]));if(request.Frames<12||request.Frames>72)throw new Exception("Frame count outside 12..72.");
   output=Path.Combine(request.AppFolder,"CAD_Preview");Directory.CreateDirectory(output);string work=Path.Combine(output,"Working");Directory.CreateDirectory(work);
-  sw=(ISldWorks)Marshal.GetActiveObject("SldWorks.Application");string original=Path.Combine(request.EngineFolder,"Ford_427_V10_Development.SLDASM");source=(ModelDoc2)sw.GetOpenDocumentByName(original);if(source==null)throw new Exception("Open the V10 development assembly in SOLIDWORKS first.");
+  sw=(ISldWorks)Marshal.GetActiveObject("SldWorks.Application");string original=Path.Combine(request.EngineFolder,request.AssemblyFile);source=(ModelDoc2)sw.GetOpenDocumentByName(original);if(source==null)throw new Exception("Open the V10 development assembly in SOLIDWORKS first.");
   string sourcePath=source.GetPathName(),clonePath=Path.Combine(work,"Evans_Engine_Preview_"+DateTime.Now.ToString("yyyyMMdd_HHmmss")+".SLDASM");int errors=0,warnings=0;
   if(!source.Extension.SaveAs(clonePath,0,3,null,ref errors,ref warnings)||errors!=0)throw new Exception("Cannot create the preview assembly copy: "+errors);
   if(!String.Equals(source.GetPathName(),sourcePath,StringComparison.OrdinalIgnoreCase))throw new Exception("Save-copy changed the source identity unexpectedly.");
   copy=(ModelDoc2)sw.OpenDoc6(clonePath,2,1,"",ref errors,ref warnings);if(copy==null)throw new Exception("Cannot open preview copy: "+errors);int active=0;sw.ActivateDoc3(copy.GetTitle(),false,0,ref active);
   AssemblyDoc assembly=(AssemblyDoc)copy;MathUtility math=(MathUtility)sw.GetMathUtility();List<EngineInstance> items=EngineKinematics.Read(Path.Combine(request.EngineFolder,"Engine_components.csv"));Dictionary<string,Component2> components=new Dictionary<string,Component2>();
   foreach(EngineInstance i in items){Component2 component=assembly.GetComponentByName(i.Name);if(component==null)throw new Exception("Missing preview component "+i.Name);components.Add(i.Name,component);}
-  List<object> checks=new List<object>();Stopwatch clock=Stopwatch.StartNew();int rendered=0,total=request.Frames*5;
+  List<object> checks=new List<object>();Stopwatch clock=Stopwatch.StartNew();int rendered=0,total=request.Frames*4;
   // Cutaway is shared by all induction packages; outer housings are removed.
-  for(int pass=0;pass<5;pass++){
+  for(int pass=0;pass<4;pass++){
    bool cutaway=pass==0;int mode=cutaway?0:pass-1;string name=cutaway?"cutaway":"exterior_"+mode;string destination=Path.Combine(output,name);Directory.CreateDirectory(destination);
    ModelView view=(ModelView)copy.ActiveView;view.EnableGraphicsUpdate=false;sw.CommandInProgress=true;
    foreach(EngineInstance i in items)components[i.Name].Transform2=(MathTransform)math.CreateTransform(EngineKinematics.Pose(i,0,0,0,0));
    view.EnableGraphicsUpdate=true;copy.ClearSelection2(true);DispatchWrapper[] all=items.Select(i=>new DispatchWrapper(components[i.Name])).ToArray();if(copy.Extension.MultiSelect2(all,false,null)!=all.Length)throw new Exception("Preview hide selection failed");assembly.HideComponent();copy.ClearSelection2(true);
-   var shown=items.Where(i=>EngineKinematics.Visible(i,cutaway?"Internals":"Engine exterior",0)&&(!i.Role.StartsWith("boost_turbo")||(mode&1)!=0)&&(!i.Role.StartsWith("boost_sc")||(mode&2)!=0)).ToList();
-   DispatchWrapper[] selected=shown.Select(i=>new DispatchWrapper(components[i.Name])).ToArray();if(copy.Extension.MultiSelect2(selected,false,null)!=selected.Length)throw new Exception("Preview show selection failed");assembly.ShowComponent();copy.ClearSelection2(true);assembly.UpdateBox();copy.ViewDisplayShaded();copy.ShowNamedView2("*Front",1);((ModelView)copy.ActiveView).RotateAboutCenter(.42,2.57);copy.ViewZoomtofit2();sw.CommandInProgress=false;
+   var shown=items.Where(i=>i.Role!="legacy_hidden"&&i.Role!="development_remote"&&EngineKinematics.Visible(i,cutaway?"Internals":"Engine exterior",0)&&(!i.Role.StartsWith("boost_turbo")||(mode&1)!=0)&&(!i.Role.StartsWith("boost_sc")||(mode&2)!=0)&&(!i.Role.StartsWith("boost_common")||mode!=0)&&(i.Role!="boost_turbo_lid"||(mode&2)==0)).ToList();
+   DispatchWrapper[] selected=shown.Select(i=>new DispatchWrapper(components[i.Name])).ToArray();if(copy.Extension.MultiSelect2(selected,false,null)!=selected.Length)throw new Exception("Preview show selection failed");assembly.ShowComponent();copy.ClearSelection2(true);assembly.UpdateBox();copy.ViewDisplayShaded();copy.ShowNamedView2("*Front",1);((ModelView)copy.ActiveView).RotateAboutCenter(.42,2.57);copy.ViewZoomtofit2();copy.ViewZoomout();copy.ViewZoomout();sw.CommandInProgress=false;
    foreach(EngineInstance i in items)if((components[i.Name].Visible!=0)!=shown.Contains(i))throw new Exception("Preview native visibility mismatch "+i.Name);
    double worst=0;Rectangle crop=Rectangle.Empty;
    for(int frame=0;frame<request.Frames;frame++){

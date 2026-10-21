@@ -72,6 +72,7 @@ namespace V10Lab {
    TextAt(g,on?"RUNNING  /  DYNO SPEED HOLD":"ENGINE MODEL STOPPED",20,9,11,on?LiveGreen:LiveMuted,true);TextAt(g,recording?"REC  "+recorded.Count+" samples":"~5 Hz data  /  ~30 Hz display",650,10,9,recording?LiveOrange:LiveMuted,false,false);
    double hpMax=Math.Max(750,Math.Ceiling(Math.Abs(p.HP)/250)*250),torqueMax=Math.Max(1000,Math.Ceiling(Math.Abs(p.TorqueNm)/500)*500);
    Gauge(g,112,130,76,"ENGINE SPEED","RPM",p.RPM,0,7000,LiveBlue);Gauge(g,337,130,76,"BRAKE POWER","hp · estimate",p.HP,Math.Min(0,Math.Floor(p.HP/250)*250),hpMax,LiveOrange);Gauge(g,562,130,76,"TORQUE","N m · estimate",p.TorqueNm,Math.Min(0,Math.Floor(p.TorqueNm/500)*500),torqueMax,LiveBlue);Gauge(g,787,130,76,"MANIFOLD","psi gauge",(p.ManifoldKPa-input.AmbientKPa)*1000/Model.PascalPerPsi,-15,40,LiveGreen);
+   if(liveSweepPeak!=null)TextAt(g,String.Format(CultureInfo.InvariantCulture,"{0}  |  Full-throttle peak estimate: {1:F1} hp @ {2:0} RPM (200 RPM samples)",point.Mode,liveSweepPeak.HP,liveSweepPeak.RPM),20,211,9,LiveMuted);
    using(Pen rule=new Pen(Color.FromArgb(42,64,86),1))g.DrawLine(rule,20,230,880,230);
    if(!DrawCadEngine(g)){
    TextAt(g,input.Cylinders+"-CYLINDER MECHANISM",20,244,10,Color.White,true);TextAt(g,"Visible motion: 1/50 crank speed",20,264,9,LiveMuted);

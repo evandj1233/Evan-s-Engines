@@ -1,1 +1,1 @@
-PASS: all 120 native frames decoded, all four exterior boost selections, cutaway frame changes, edited geometry fallback, native pose readback in Render_Checks.json, and sampled peak HP display. Rendered poses are not physical validation.
+PASS: 96 native Rev B frames decoded, naturally aspirated and separate turbo/blower exterior selections, cutaway frame changes, edited geometry fallback, native pose readback in Render_Checks.json, and sampled peak HP display. Rendered poses are not physical validation.

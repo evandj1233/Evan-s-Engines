@@ -1,0 +1,22 @@
+{
+  "Status": "PASS",
+  "Meaning": "Numerical consistency only. This closed-cylinder model has different efficiency assumptions and is not calibrated against the fast model or a real engine.",
+  "Checks": [
+    {
+      "Candidate": "Twin_Turbo",
+      "peak_pressure_bar": 129.81700578179672,
+      "brake_hp_estimate": 1545.533546314193,
+      "energy_relative_residual": 4.563017843353226e-08,
+      "work_step_change_pct": 0.0009545541615265016,
+      "peak_pressure_step_change_pct": 0.003849694354441698
+    },
+    {
+      "Candidate": "Supercharger",
+      "peak_pressure_bar": 150.4538450305289,
+      "brake_hp_estimate": 1631.9143307645213,
+      "energy_relative_residual": 5.02073029153406e-08,
+      "work_step_change_pct": 0.0009482198946432222,
+      "peak_pressure_step_change_pct": 0.0026727446685424045
+    }
+  ]
+}

@@ -1,0 +1,1 @@
+PASS: separate 4-row target comparison, chart, full study/curve/case persistence, independent turbo/blower case loading at solved HP. No calibrated power/durability claim.
