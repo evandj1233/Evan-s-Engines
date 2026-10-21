@@ -8,6 +8,8 @@
 - Native desktop smoke check passed every tab and all four boost modes (128 points).
 - Native app -> bundled Python/Cantera -> saved pressure trace -> chart integration passed.
 - Live gauges use the model output. Start/Stop, frame-independent display smoothing, rolling readings, CSV recording and input snapshots passed their integration check.
+- Native SOLIDWORKS preview: 120 exported frames decoded and selected across four exterior packages and one cutaway. Crank/cam/piston pose readback maximum matrix-element error was below 3e-16. Geometry mismatch falls back to the schematic.
+- Performance chart displays the highest sampled HP and RPM in the selected sweep, with 200 RPM sampling explicitly labelled.
 - Optional SOLIDWORKS helper successfully read the active assembly's mass, volume and area without saving or modifying CAD.
 
 These are numerical and software checks. No real dyno calibration, measured power validation, structural durability, turbo-map validation or GT-POWER equivalence is claimed.

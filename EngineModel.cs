@@ -20,7 +20,7 @@ namespace V10Lab {
         public double TurboExhaustLossBar=0.25;
         public double[] VeRPM={800,1500,2500,3500,4500,5500,6500,7000};
         public double[] Ve={0.68,0.78,0.87,0.94,0.98,0.95,0.88,0.82};
-        public string ModelVersion="0.2.0";
+        public string ModelVersion="0.3.0";
         public string DataStatus="UNVALIDATED SCENARIO: airflow, combustion, losses and boost are assumptions";
         public Inputs Copy() {return Json.Deserialize<Inputs>(Json.Serialize(this));}
         public void Validate() {

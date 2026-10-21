@@ -1,4 +1,4 @@
-EVAN'S ENGINES — 0.2.0
+EVAN'S ENGINES — 0.3.0
 Local Windows engineering lab
 
 START
@@ -19,7 +19,9 @@ Visible mechanism motion is slowed to 1/50 crank speed. No sound is generated.
 
 1. Choose an engine example, or change geometry in Model inputs and Apply.
 2. Set the operating RPM and throttle. The top numbers describe that point.
-3. Run RPM sweep for curves, or Compare all four boost modes.
+3. Open Performance, then Run RPM sweep. The chart gives Peak HP at RPM
+   for the sampled 800-7000 RPM range (200 RPM steps), not a proven maximum.
+   Compare all four boost modes overlays their curves.
 4. Open Cylinder physics and press Run cylinder physics for a pressure trace.
 5. Save engine case to preserve inputs. Export current results writes CSV
    plus an input snapshot. Cylinder tests save their request, trace and checks
@@ -53,6 +55,15 @@ Gearbox: six ratios from the CAD concept with an assumed 95% efficiency.
 Thermal: independent lumped heat balance for one uniform object temperature.
 
 SOLIDWORKS
+Live bench offers SOLIDWORKS exterior, cutaway and Cylinder schematic views.
+Enlarge engine opens a larger moving view. Native frames are rendered from
+a separate assembly copy, at 30 crank-degree intervals; displayed motion is
+slowed 50 times. These are prescribed mechanical poses, not combustion or
+deformation predictions. Four exterior frame sets follow the boost switches.
+The original V10 geometry is required; edited geometry uses the schematic.
+Your CAD files and frame assets stay in the local installation. Public source
+builds without these private frames fall back to the cylinder schematic.
+
 The installed local copy can open your existing assembly/parts, and the
 optional CadReadback helper reads the active document's assigned mass,
 volume, surface area and material through the supported SOLIDWORKS API.

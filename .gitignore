@@ -12,3 +12,8 @@ Evidence/*
 !Evidence/App_Smoke.png
 !Evidence/Cylinder_UI.png
 !Evidence/Verification.md
+
+CAD_Preview/
+*.SLDASM
+*.SLDPRT
+

@@ -30,11 +30,11 @@ namespace V10Lab {
   readonly List<LiveSample> liveHistory=new List<LiveSample>(),recorded=new List<LiveSample>();
   readonly Dictionary<string,Inputs> recordedInputs=new Dictionary<string,Inputs>();
   void BuildLiveBench(){
-   TabPage page=Tab("Live bench");FlowLayoutPanel bar=new FlowLayoutPanel{Dock=DockStyle.Top,Height=53,Padding=new Padding(8),BackColor=Color.White,WrapContents=false};
+   TabPage page=Tab("Live bench");FlowLayoutPanel bar=new FlowLayoutPanel{Dock=DockStyle.Top,Height=100,AutoSize=true,AutoSizeMode=AutoSizeMode.GrowAndShrink,Padding=new Padding(8),BackColor=Color.White,WrapContents=true};
    liveStart=Button(bar,"Start engine model",()=>{live.Enabled=!live.Enabled;liveStart.Text=live.Enabled?"Stop engine model":"Start engine model";},true);liveStart.Width=180;
    recordButton=Button(bar,"Record live data",()=>{recording=!recording;recordButton.Text=recording?"Stop recording":"Record live data";if(recording&&recorded.Count>=6000){recorded.Clear();recordedInputs.Clear();}},false);recordButton.Width=160;
    Button save=Button(bar,"Save live log",SaveLive,false);save.Width=135;
-   Label label=new Label{Text="LIVE CALCULATED DATA\nUse RPM, throttle and boost at left",Width=270,Height=40,Padding=new Padding(6,4,0,0),Font=new Font("Segoe UI",9)};bar.Controls.Add(label);
+   Label label=new Label{Text="LIVE CALCULATED DATA\nUse RPM, throttle and boost at left",Width=270,Height=40,Padding=new Padding(6,4,0,0),Font=new Font("Segoe UI",9)};bar.Controls.Add(label);bar.SetFlowBreak(label,true);BuildCadControls(bar);
    liveCanvas=new SmoothPanel{Dock=DockStyle.Fill,BackColor=Color.FromArgb(13,24,38)};liveCanvas.Paint+=DrawLive;page.Controls.Add(liveCanvas);page.Controls.Add(bar);
   }
   void AdvanceLive(double dt,double now){
@@ -46,7 +46,7 @@ namespace V10Lab {
    if(now-lastLiveSample>=.2){lastLiveSample=now-((now-lastLiveSample)%.2);LiveSample sample=new LiveSample{Seconds=now,UTC=DateTime.UtcNow.ToString("o"),Point=livePoint,InputId=""};liveHistory.Add(sample);if(liveHistory.Count>300)liveHistory.RemoveAt(0);
     if(recording){string json=Inputs.Json.Serialize(input),id;using(SHA256 hash=SHA256.Create())id=BitConverter.ToString(hash.ComputeHash(Encoding.UTF8.GetBytes(json))).Replace("-","").Substring(0,16);sample.InputId=id;if(!recordedInputs.ContainsKey(id))recordedInputs.Add(id,input.Copy());recorded.Add(sample);if(recorded.Count>=6000){recording=false;recordButton.Text="Record live data";status.Text="Live recording reached 6000 samples. Save the log before starting another.";}}
    }
-   if(tabs.SelectedIndex==0)liveCanvas.Invalidate();
+   UpdateCadPreview(now);if(tabs.SelectedIndex==0)liveCanvas.Invalidate();
   }
   void SaveLive(){if(recorded.Count==0)throw new Exception("Press Record live data, run the model, then stop recording and save the log.");using(SaveFileDialog d=new SaveFileDialog{Filter="Live data (*.csv)|*.csv",InitialDirectory=Path.Combine(Root,"Runs"),FileName="Live_"+DateTime.Now.ToString("yyyyMMdd_HHmmss")+".csv"})if(d.ShowDialog()==DialogResult.OK){WriteLiveLog(d.FileName);status.Text="Saved "+recorded.Count+" live samples with timestamps and input snapshots.";}}
   void WriteLiveLog(string path){
@@ -73,6 +73,7 @@ namespace V10Lab {
    double hpMax=Math.Max(750,Math.Ceiling(Math.Abs(p.HP)/250)*250),torqueMax=Math.Max(1000,Math.Ceiling(Math.Abs(p.TorqueNm)/500)*500);
    Gauge(g,112,130,76,"ENGINE SPEED","RPM",p.RPM,0,7000,LiveBlue);Gauge(g,337,130,76,"BRAKE POWER","hp · estimate",p.HP,Math.Min(0,Math.Floor(p.HP/250)*250),hpMax,LiveOrange);Gauge(g,562,130,76,"TORQUE","N m · estimate",p.TorqueNm,Math.Min(0,Math.Floor(p.TorqueNm/500)*500),torqueMax,LiveBlue);Gauge(g,787,130,76,"MANIFOLD","psi gauge",(p.ManifoldKPa-input.AmbientKPa)*1000/Model.PascalPerPsi,-15,40,LiveGreen);
    using(Pen rule=new Pen(Color.FromArgb(42,64,86),1))g.DrawLine(rule,20,230,880,230);
+   if(!DrawCadEngine(g)){
    TextAt(g,input.Cylinders+"-CYLINDER MECHANISM",20,244,10,Color.White,true);TextAt(g,"Visible motion: 1/50 crank speed",20,264,9,LiveMuted);
    int columns=(input.Cylinders+1)/2;
    for(int i=0;i<input.Cylinders;i++){
@@ -86,6 +87,7 @@ namespace V10Lab {
     float cx=x+24,cy=y+80;double a=cycle*Math.PI/180;float jx=cx+10*(float)Math.Sin(a),jy=cy-10*(float)Math.Cos(a);using(Pen rod=new Pen(Color.FromArgb(184,204,222),3))g.DrawLine(rod,cx,pistonY+5,jx,jy);using(Pen crank=new Pen(LiveBlue,3)){g.DrawEllipse(crank,cx-11,cy-11,22,22);g.DrawLine(crank,cx,cy,jx,jy);}
     using(Pen valve=new Pen(LiveBlue,2))g.DrawLine(valve,x+15,y-2+(float)il*.5f,x+15,y+8+(float)il*.5f);using(Pen valve=new Pen(LiveOrange,2))g.DrawLine(valve,x+33,y-2+(float)el*.5f,x+33,y+8+(float)el*.5f);
     using(SolidBrush fire=new SolidBrush(on&&cycle<25?LiveOrange:Color.FromArgb(50,67,83)))g.FillEllipse(fire,x+37,y-7,7,7);TextAt(g,(i+1).ToString(),x+19,y+61,7,LiveMuted);
+   }
    }
    TextAt(g,"LIVE READINGS",570,244,10,Color.White,true);
    string[] names={"Time","Throttle","Airflow","Fuel flow","Charge temp","Manifold abs.","Piston speed","Blower drive","Turbo demand"};

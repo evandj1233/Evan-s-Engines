@@ -8,8 +8,10 @@ A local Windows engineering lab for engine scenarios, cylinder thermodynamics, p
 
 - Live RPM, horsepower, torque and manifold gauges; animated cylinders, valves and boost activity; rolling history and timestamped CSV recording with input snapshots.
 - Live data is calculated by the scenario model, not ECU/sensor telemetry. Speed transitions are display smoothing; mechanism motion is shown at 1/50 speed.
+- Optional SOLIDWORKS exterior/cutaway animation and an enlarged engine view. The local V10 installation includes native rendered frames; private CAD and frame assets are not included in this public repository. Other geometry falls back to the schematic.
 - Configurable four-stroke engines with 1–16 cylinders; a 7.0 L V10 starts with geometry from the user's CAD concept.
 - Direct RPM/throttle controls, sweeps, independent twin-turbo/supercharger switches and four-mode comparisons.
+- Peak sampled horsepower and its RPM appear above the Performance chart (800–7000 RPM, 200 RPM steps).
 - Saved JSON engine cases, CSV curves and complete input snapshots.
 - Cantera variable-property closed-cylinder pressure traces with prescribed heat release, energy balance and step convergence checks.
 - Slow-motion piston, rod and valve inspection; optional native SOLIDWORKS part opening and read-only mass/material helper.
