@@ -1,0 +1,14 @@
+Runtime/
+Runs/
+*.exe
+*.dll
+*.pdb
+runtime.json
+__pycache__/
+Evidence/*
+!Evidence/Numerical_Checks.txt
+!Evidence/Cylinder_Checks.json
+!Evidence/REA_Inspection.md
+!Evidence/App_Smoke.png
+!Evidence/Cylinder_UI.png
+!Evidence/Verification.md

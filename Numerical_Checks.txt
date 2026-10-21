@@ -1,0 +1,4 @@
+PASS: 4686 numerical assertions; 480 scenario points.
+Worst sampled cam/CAD motion error: intake 0.00067843764337133239 mm; exhaust 0.00066922085689569144 mm.
+Checks include units, energy accounting, zero speed, oxygen-limited fuel, compounded boost, ideal gearbox power, JSON deep copy, input rejection and sweep endpoints.
+This verifies calculation consistency. No measured engine calibration or physical validation is claimed.
