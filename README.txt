@@ -1,4 +1,4 @@
-EVAN'S ENGINES — 0.1.0
+EVAN'S ENGINES — 0.2.0
 Local Windows engineering lab
 
 START
@@ -8,6 +8,15 @@ No administrator rights, subscription or SOLIDWORKS license is needed for
 the engine, cylinder, gearbox or thermal scenario calculators.
 
 FIRST TEST
+Open Live bench and press Start engine model for moving gauges, cylinder
+activity, pistons/valves and boost component activity. RPM, throttle and boost
+controls at left update the calculations. The rolling RPM/power view retains
+roughly one minute. Record live data captures about 5 samples/second, up to
+6000 samples, and Save live log exports timestamps, readings and input sets.
+This is live CALCULATED data, not ECU or sensor telemetry. RPM transitions
+use frame-independent display smoothing, not a calibrated transient model.
+Visible mechanism motion is slowed to 1/50 crank speed. No sound is generated.
+
 1. Choose an engine example, or change geometry in Model inputs and Apply.
 2. Set the operating RPM and throttle. The top numbers describe that point.
 3. Run RPM sweep for curves, or Compare all four boost modes.

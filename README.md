@@ -2,10 +2,12 @@
 
 A local Windows engineering lab for engine scenarios, cylinder thermodynamics, parts and timing, ideal gearboxes, and simple thermal tests.
 
-![Evan’s Engines desktop app](App_Smoke.png)
+![Evan’s Engines live test bench](Live_Bench.png)
 
 ## What works
 
+- Live RPM, horsepower, torque and manifold gauges; animated cylinders, valves and boost activity; rolling history and timestamped CSV recording with input snapshots.
+- Live data is calculated by the scenario model, not ECU/sensor telemetry. Speed transitions are display smoothing; mechanism motion is shown at 1/50 speed.
 - Configurable four-stroke engines with 1–16 cylinders; a 7.0 L V10 starts with geometry from the user's CAD concept.
 - Direct RPM/throttle controls, sweeps, independent twin-turbo/supercharger switches and four-mode comparisons.
 - Saved JSON engine cases, CSV curves and complete input snapshots.

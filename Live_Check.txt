@@ -1,0 +1,1 @@
+PASS: Start/Stop state, smoothed RPM, calculated gauges, 5 Hz rolling history, live CSV recording and input snapshots. Display transition is not a physical transient model.

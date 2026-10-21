@@ -9,7 +9,7 @@ if not exist Runs mkdir Runs
 if not exist Runtime\Lib mkdir Runtime\Lib
 set "EE_SRC=Source"
 if not exist Source\EngineModel.cs set "EE_SRC=."
-"%EE_CSC%" /nologo /target:winexe /platform:x64 /out:EvansEngines.exe /reference:System.Windows.Forms.dll /reference:System.Drawing.dll /reference:System.Web.Extensions.dll /reference:System.Windows.Forms.DataVisualization.dll "%EE_SRC%\EngineModel.cs" "%EE_SRC%\CamProfile.cs" "%EE_SRC%\EvanEngines.cs" "%EE_SRC%\Checks.cs"
+"%EE_CSC%" /nologo /target:winexe /platform:x64 /out:EvansEngines.exe /reference:System.Windows.Forms.dll /reference:System.Drawing.dll /reference:System.Web.Extensions.dll /reference:System.Windows.Forms.DataVisualization.dll "%EE_SRC%\EngineModel.cs" "%EE_SRC%\CamProfile.cs" "%EE_SRC%\EvanEngines.cs" "%EE_SRC%\LiveBench.cs" "%EE_SRC%\Checks.cs"
 if errorlevel 1 exit /b 1
 "%EE_PY%" -m pip install --target Runtime\Lib -r requirements.txt --upgrade
 if errorlevel 1 exit /b 1

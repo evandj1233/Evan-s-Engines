@@ -20,7 +20,7 @@ namespace V10Lab {
         public double TurboExhaustLossBar=0.25;
         public double[] VeRPM={800,1500,2500,3500,4500,5500,6500,7000};
         public double[] Ve={0.68,0.78,0.87,0.94,0.98,0.95,0.88,0.82};
-        public string ModelVersion="1.0.0";
+        public string ModelVersion="0.2.0";
         public string DataStatus="UNVALIDATED SCENARIO: airflow, combustion, losses and boost are assumptions";
         public Inputs Copy() {return Json.Deserialize<Inputs>(Json.Serialize(this));}
         public void Validate() {
@@ -86,7 +86,9 @@ namespace V10Lab {
             r.PumpingKW=pmep*1e5*DisplacementM3(p)*rpm/120/1000;
             r.TurboCompressorKW=r.AirKgS*AirCp*turboDelta/1000;
             r.SuperchargerDriveKW=r.AirKgS*AirCp*scDelta/p.DriveEfficiency/1000;
-            r.AccessoryKW=rpm>0?p.AccessoryKW:0;
+            // Assumed constant accessory torque below 800 RPM, fixed power above.
+            // This avoids a nonphysical infinite accessory torque as RPM -> 0.
+            r.AccessoryKW=p.AccessoryKW*Math.Min(1,rpm/800);
             r.BrakeKW=r.IndicatedKW-r.FrictionKW-r.PumpingKW-r.SuperchargerDriveKW-r.AccessoryKW;
             r.HP=r.BrakeKW*1000/WattPerHP;
             r.TorqueNm=rpm>0?r.BrakeKW*1000/(rpm*2*Math.PI/60):0;
